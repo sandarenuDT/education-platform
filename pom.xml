@@ -56,6 +56,10 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
 
         <!-- JWT -->
         <dependency>
@@ -76,11 +80,11 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- API docs (1.x line = javax / Spring Boot 2 compatible) -->
+        <!-- API docs (jakarta-compatible line) -->
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.7.0</version>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
         </dependency>
 
         <dependency>
@@ -104,6 +108,23 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- Forces Lombok to run as an annotation processor. Newer versions
+                         of this plugin sometimes stop auto-discovering it on the classpath,
+                         which silently skips @Getter/@Setter code generation and causes
+                         "cannot find symbol" errors for methods that were never generated. -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
@@ -117,5 +138,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
