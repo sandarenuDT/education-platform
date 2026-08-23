@@ -24,4 +24,11 @@ public final class ApiPaths {
     // Wildcard versions, for SecurityConfig's requestMatchers
     public static final String AUTH_ALL = AUTH + "/**";
     public static final String PUBLIC_ALL = PUBLIC + "/**";
+
+    // Public catalog sub-paths
+    public static final String PUBLIC_BOOKS = PUBLIC + "/books";
+
+    // Super-admin sub-paths
+    public static final String SUPER_ADMIN_TEACHERS = SUPER_ADMIN + "/teachers";
+
 }
