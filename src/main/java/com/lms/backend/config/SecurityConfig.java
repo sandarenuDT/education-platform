@@ -23,10 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * - Public read endpoints (catalog, teacher profiles) are open.
  * - Everything else requires a valid JWT; role-specific rules are enforced
  *   via @PreAuthorize on controllers (see controller/teacheradmin, /superadmin).
- *
- * Written against Spring Security 6.3+ (DaoAuthenticationProvider takes its
- * UserDetailsService via constructor now; antMatchers was replaced by
- * requestMatchers).
+ * - CORS is explicitly enabled below and delegates to the CorsConfigurationSource
+ *   bean in CorsConfig.java — defining that bean alone is NOT enough in
+ *   Spring Security 6+; .cors(...) must be called here too, or it's ignored.
  */
 @Configuration
 @EnableWebSecurity
@@ -49,8 +48,6 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        // Constructor injection is required from Spring Security 6.3 onward —
-        // the no-arg constructor + setUserDetailsService() setter were removed.
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
@@ -64,7 +61,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // stateless JWT API — no CSRF cookies involved
+                .cors(cors -> {}) // enables Spring Security's CORS support, which
+                // then looks up and uses the CorsConfigurationSource
+                // bean from CorsConfig.java automatically
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
